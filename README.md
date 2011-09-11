@@ -20,11 +20,13 @@ Copy the kohana_validation.php file into your site's top-level `libraries` direc
 		$post->add_rule('username', array($this, 'validate_unique_username'), 'Sorry, that username is already taken'); //This is a custom rule -- you're telling the helper to call a function you've defined in this controller class called "validate_unique_username", which will accept one argument (the posted value), and return true (if valid) or false (if invalid). Note that the custom validation rule function you define MUST be public (because it is called from the validation helper library, not from within this controller). Be careful not to give it a name that is likely to be confused with an action (C5 unfortunately provides no way to define a public method in a controller that isn't an action responder -- you can have methods that aren't intended to be actions, but if someone accidentally hits that url, it will get called and confusion will ensue).
 		
 		$post->add_rule('password', 'required', 'Password is required.');
-		$post->add_rule('password', 'matches[password_confirm]', 'Passwords do not match.'); //assumes there's another field in the form named "password_confirm"
+		$post->add_rule('password', 'matches[password_confirm]', 'Passwords do not match.'); //assumes there is another field in the form named "password_confirm"
 		
 		$post->add_rule('image_fID', 'required', 'You must choose an Image.');
 		$post->add_rule('image_fID', 'atleast[1]', 'You must choose an Image.'); //0 is posted by the asset library helper when there's no selection, so if the field is required you must explicitly check that the value is greater than 0
 		//Note about file uploads: this library contains file upload validators, but you probably shouldn't use plain old "file" inputs in your form -- instead use C5's asset library helper, which posts a file id
+		
+		$post->pre_filter('trim', 'name'); //run a filter on the 'name' field prior to validation (php's built-in 'trim()' function in this case, but you could also create your own filter function that accepts a string and returns a string, similar to how the custom validation rules work)
 		
 		$post->validate();
 		$error = $post->errors(true); //passing in true to get a C5 "validation/error" object (instead of an array)
