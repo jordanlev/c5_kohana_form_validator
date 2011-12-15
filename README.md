@@ -54,19 +54,15 @@ Note that I made a few additions and modifications to Kohana's library:
  * The `errors()` method will optionally return a Concrete5 `validation/error` object instead of an associative array if you pass in `true`.
 
 ## Callbacks
-If you want to have your own custom validation rule for some logic that isn't included in the library, you can add a callback. For example, let's say we want to validate that a certain field contains a unique value. First, add the callback to the validation object (around the same place you'd call add_rule):
+For custom validation rules where you need to compare more than one field, you can add a callback. This is very similar to the example `add_rule` call above where you pass in your own function name, but with a callback you are passed the entire array of submitted data instead of just the one field's value. For example, let's say we want to validate that an end date is after a start date. First, add the callback to the validation object (around the same place you'd call `add_rule`):
 
-    $v->add_callback('company_name', array($this, 'validateUniqueCompany'), 'The specified Company Name is already in use.');
+    $v->add_callback('end_date', array($this, 'validate_end_date'), 'The end data must be after the start date.');
 
-...now create your custom validation function that will get called back by the validation library. This function must contain exactly two parameters -- a "KohanaValidation" object (which you can treat as if it were an array to retrieve data values), and the field name that is being validated. If there is an error, call the `add_error` method of the KohanaValidation object (don't just return false). For example:
+Now create your custom validation function that will get called back by the validation library. This function must contain exactly two parameters -- a "KohanaValidation" object (which you can treat as if it were an array to retrieve data values), and the field name that is being validated. If there is an error, call the `add_error` method of the KohanaValidation object (don't just return false). For example:
 
-    public function validateUniqueCompany(KohanaValidation $kv, $field) {
-		$sql = "SELECT COUNT(*) FROM Companies WHERE {$field} = ?";
-		$vals = array($kv[$field]);
-		$count = $this->db->GetOne($sql, $vals);
-		if ($count > 0) {
-			$kv->add_error($field_name, 'validateUniqueCompany'); //2nd arg MUST match the function name
+    public function validate_end_date(KohanaValidation $kv, $field_name) {
+		if (strtotime($kv['end_date']) < strtotime($kv['start_date'])) {
+			$kv->add_error($field_name, 'validate_end_date'); //2nd arg MUST match the function name
 		}
-		
 	}
 
