@@ -435,6 +435,24 @@ class KohanaValidation extends ArrayObject { //ArrayObject is a built-in PHP thi
 	}
 
 	/**
+	 * Add one callback for one field, along with its error message
+	 */
+	public function add_callback($field, $callback, $error_message = null) {
+		$this->add_callbacks($field, $callback);
+		if (!is_null($error_message)) {
+			if (is_array($callback)) {
+				$rule = $callback[1];
+			} else if (is_string($callback)) {
+				$rule = $callback;
+			} else {
+				//uhh... not sure how to handle this (just don't pass something other than an array or string!)
+				return;
+			}
+			$this->add_message($field, $rule, $error_message);
+		}
+	}
+
+	/**
 	 * Validate by processing pre-filters, rules, callbacks, and post-filters.
 	 * All fields that have filters, rules, or callbacks will be initialized if
 	 * they are undefined. Validation will only be run if there is data already

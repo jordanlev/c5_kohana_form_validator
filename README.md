@@ -45,10 +45,28 @@ Copy the kohana_validation.php file into your site's top-level `libraries` direc
 
 For a full list of available rules, see http://docs.kohanaphp.com/libraries/validation#rules
 
+# Changes From Original Library
 Note that I made a few additions and modifications to Kohana's library:
 
  * Added "inrange", "atleast" and "atmost" validation rules for validating that numbers are within a certain range, or greater than / less than a certain number.
  * Error messages are set in the library directly (not via a separate language file).
- * Added a new `add_rule()` method for adding one rule at a time along with its error message. This makes the code easier to understand and maintain because the error messages are right there next to the applicable rules instead of in a separate data structure.
+ * Added new `add_rule()` and `add_callback()` methods for adding one rule/callback at a time along with its error message. This makes the code easier to understand and maintain because the error messages are right there next to the applicable rules instead of in a separate data structure.
  * The `errors()` method will optionally return a Concrete5 `validation/error` object instead of an associative array if you pass in `true`.
+
+# Callbacks
+If you want to have your own custom validation rule for some logic that isn't included in the library, you can add a callback. For example, let's say we want to validate that a certain field contains a unique value. First, add the callback to the validation object (around the same place you'd call add_rule):
+
+    $v->add_callback('company_name', array($this, 'validateUniqueCompany'), 'The specified Company Name is already in use.');
+
+...now create your custom validation function that will get called back by the validation library. This function must contain exactly two parameters -- a "KohanaValidation" object (which you can treat as if it were an array to retrieve data values), and the field name that is being validated. If there is an error, call the `add_error` method of the KohanaValidation object (don't just return false). For example:
+
+    public function validateUniqueCompany(KohanaValidation $kv, $field) {
+		$sql = "SELECT COUNT(*) FROM Companies WHERE {$field} = ?";
+		$vals = array($kv[$field]);
+		$count = $this->db->GetOne($sql, $vals);
+		if ($count > 0) {
+			$kv->add_error($field_name, 'validateUniqueCompany'); //2nd arg MUST match the function name
+		}
+		
+	}
 
