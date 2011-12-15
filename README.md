@@ -2,7 +2,7 @@
 
 This is a port of Kohana 2.3.4's form validation helper library. Its usage is vaguely similar to C5's built-in "validation/form" helper, but is much more full-featured in terms of the number of validation rules available.
 
-# How To Use
+## How To Use
 Copy the kohana_validation.php file into your site's top-level `libraries` directory. Then, in a controller action that responds to a form submission, add some code like this:
 
 	if ($this->post()) {
@@ -45,7 +45,7 @@ Copy the kohana_validation.php file into your site's top-level `libraries` direc
 
 For a full list of available rules, see http://docs.kohanaphp.com/libraries/validation#rules
 
-# Changes From Original Library
+## Changes From Original Library
 Note that I made a few additions and modifications to Kohana's library:
 
  * Added "inrange", "atleast" and "atmost" validation rules for validating that numbers are within a certain range, or greater than / less than a certain number.
@@ -53,7 +53,7 @@ Note that I made a few additions and modifications to Kohana's library:
  * Added new `add_rule()` and `add_callback()` methods for adding one rule/callback at a time along with its error message. This makes the code easier to understand and maintain because the error messages are right there next to the applicable rules instead of in a separate data structure.
  * The `errors()` method will optionally return a Concrete5 `validation/error` object instead of an associative array if you pass in `true`.
 
-# Callbacks
+## Callbacks
 If you want to have your own custom validation rule for some logic that isn't included in the library, you can add a callback. For example, let's say we want to validate that a certain field contains a unique value. First, add the callback to the validation object (around the same place you'd call add_rule):
 
     $v->add_callback('company_name', array($this, 'validateUniqueCompany'), 'The specified Company Name is already in use.');
