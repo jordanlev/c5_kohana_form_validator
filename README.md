@@ -26,6 +26,7 @@ Copy the kohana_validation.php file into your site's top-level `libraries` direc
 		//Note about file uploads: this library contains file upload validators, but you probably shouldn't use plain old "file" inputs in your form -- instead use C5's asset library helper, which posts a file id
 		
 		$v->pre_filter('trim', 'name'); //run a filter on the 'name' field prior to validation (php's built-in 'trim()' function in this case, but you could also create your own filter function that accepts a string and returns a string, similar to how the custom validation rules work)
+		                                //(NOTE that param order is reversed from add_rule() -- field name is 2nd!)
 		
 		$v->validate();
 		$error = $v->errors(true); //passing in true to get a C5 "validation/error" object (instead of an array)
